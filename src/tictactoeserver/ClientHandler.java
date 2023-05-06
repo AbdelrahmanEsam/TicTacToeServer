@@ -9,25 +9,29 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 class ClientHandler extends Thread{
     
-   static Vector<ClientHandler> clients = new Vector();
-    DataInputStream ear = null;
-    PrintStream mouth = null;
+   static Vector<ClientHandler> onlinePlayers = new Vector();
+    DataInputStream listener = null;
+    PrintStream sender = null;
   
    public ClientHandler(Socket newClient)
    {
    
        
        try {
-           ear = new DataInputStream(newClient.getInputStream());
-           mouth = new PrintStream(newClient.getOutputStream());
+           listener = new DataInputStream(newClient.getInputStream());
+           sender = new PrintStream(newClient.getOutputStream());
            
-           ClientHandler.clients.add(this);
+           ClientHandler.onlinePlayers.add(this);
            start();
            System.out.println("perfect");
        } catch (IOException ex) {
@@ -43,10 +47,47 @@ class ClientHandler extends Thread{
       
        try {
            while(true){
-                comingMessage = ear.readLine();
-                 mouth.println("hi");
+                comingMessage = listener.readLine();
+                Vector<String> input = new Vector<>();
+                if(comingMessage != null)
+                {
+                    input.add(comingMessage);
+                    input.forEach((line) -> {
+                      // System.out.println(line);
+                           switch(line.split(" ")[0])
+                {
+                
+                    case "first":
+                    {
+                    
+                        firstMethod(line);
+                        
+                      
+                      
+                    }
+                    
+                    
+                    case "second":
+                    {
+                        
+                      secondMethod(line);
+                     
+                    }
+                    
+                    default:{
+                    
+                    System.out.println("defualt");
+                    
+                    }
+                    
+                }
+                    });
+              
+    
        
            }
+                }
+              
           
        
        } catch (IOException ex) {
@@ -56,13 +97,17 @@ class ClientHandler extends Thread{
    }
    
    
-   private void sendMessageToAllClients(String comingMessage)
-   {
+   private void firstMethod(String ...params)
+   { System.out.println(params[0]);
+       sender.println("yes I am the first method and your param is" + params[0]);
    
-       for(ClientHandler client : clients){   
-           client.mouth.println(comingMessage);
-
-       }
+   }
+   
+   
+   private void secondMethod(String ...params)
+   {
+    System.out.println(params[0]);
+      sender.println("yes I am the socond method and your param is : " + params[0]);
    }
 
 }
