@@ -1,8 +1,7 @@
 package tictactoeserver;
 
-import java.io.IOException;
+import tictactoeserver.data.Server;
 import java.net.ServerSocket;
-import java.net.Socket;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
