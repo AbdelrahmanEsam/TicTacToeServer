@@ -14,16 +14,27 @@ public class PlayerDto {
     public PlayerDto() {
     }
 
+    String playerName;
+    String password;
+
     public PlayerDto(String playerName, String password) {
         this.playerName = playerName;
         this.password = password;
     }
-    String playerName;
-    String password;
+    
+    public PlayerDto(String playerName, String password, int score, int numberOfGameWins, int numberOfGameLose, int numberOfGameDraws) {
+        this.playerName = playerName;
+        this.password = password;
+        this.score = score;
+        this.numberOfGameWins = numberOfGameWins;
+        this.numberOfGameLose = numberOfGameLose;
+        this.numberOfGameDraws = numberOfGameDraws;
+    }
     int score;
     int numberOfGameWins;
     int numberOfGameLose;
     int numberOfGameDraws;
+
 
     public String getPlayerName() {
         return playerName;

@@ -12,7 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.derby.jdbc.ClientDriver;
@@ -32,7 +31,12 @@ public class DataAccessLayer {
         System.out.println("Connected to DB");
     }
 
-    public static List<PlayerDto> getAll() throws SQLException {
+    public static void disconnect() throws SQLException {
+        System.out.println("Disconnected from DB");
+        connection.close();
+    }
+
+    public static List<PlayerDto> getAllPlayers() throws SQLException {
         List<PlayerDto> allPlayers = new ArrayList<>();
 
         PreparedStatement preparedStatement;
@@ -40,40 +44,17 @@ public class DataAccessLayer {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-//            PlayerDto c = new PlayerDto(resultSet.getString("USERNAME"),
-//                    resultSet.getString("PASSWORD"),
-//                    resultSet.getInt("SCORE"),
-//                    resultSet.getInt("GAMESWON"),
-//                    resultSet.getInt("GAMESLOST"),
-//                    resultSet.getInt("GAMESDRAWN"));
-//            allPlayers.add(c);
+            PlayerDto c = new PlayerDto(resultSet.getString("USERNAME"),
+                    resultSet.getString("PASSWORD"),
+                    resultSet.getInt("SCORE"),
+                    resultSet.getInt("GAMESWON"),
+                    resultSet.getInt("GAMESLOST"),
+                    resultSet.getInt("GAMESDRAWN"));
+            allPlayers.add(c);
 
         }
         preparedStatement.close();
         return allPlayers;
-
-    }
-
-    public static void disconnect() throws SQLException {
-        System.out.println("Disconnected from DB");
-        connection.close();
-    }
-
-    private static boolean isPasswordCorrect(String userName, String password) {
-        boolean isCorrect = false;
-        try {
-            connection = DriverManager.getConnection("jdbc:derby://127.0.0.1:1527/TicTacToe", "root", "root");
-            PreparedStatement preparedStatement;
-            preparedStatement = connection.prepareStatement("SELECT * FROM PLAYERS WHERE USERNAME = ?  AND PASSWORD = ?");
-            preparedStatement.setString(1, userName);
-            preparedStatement.setString(2, password);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            isCorrect = resultSet.next();
-            preparedStatement.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return isCorrect;
 
     }
 
@@ -136,67 +117,43 @@ public class DataAccessLayer {
 
     }
 
-//
-//    public static int update(ContactDTO contact) throws SQLException {
-//        int result = 0;
-//        PreparedStatement preparedStatement;
-//        preparedStatement = connection.prepareStatement("UPDATE CONTACTS SET FirstName = ?, middleName = ?, lastName = ?, phone = ?, email = ? WHERE ID =?");
-//        preparedStatement.setString(1, contact.getFirstName());
-//        preparedStatement.setString(2, contact.getMiddleName());
-//        preparedStatement.setString(3, contact.getLastName());
-//        preparedStatement.setString(4, contact.getPhone());
-//        preparedStatement.setString(5, contact.getEmail());
-//        preparedStatement.setInt(6, contact.getId());
-//
-//        result = preparedStatement.executeUpdate();
-//        System.out.println(contact.toString() + " Updated Successfully");
-//        preparedStatement.close();
-//        return result;
-//    }
-//
-//    public static int delete(int id) throws SQLException {
-//        int result = -1;
-//        PreparedStatement preparedStatement;
-//        preparedStatement = connection.prepareStatement("DELETE FROM CONTACTS WHERE ID = ?");
-//        preparedStatement.setInt(1, id);
-//        result = preparedStatement.executeUpdate();
-//        preparedStatement.close();
-//        return result;
-//    }
-//
-//    public static ContactDTO first() throws SQLException {
-//        ContactDTO contact = null;
-//        PreparedStatement preparedStatement;
-//        preparedStatement = connection.prepareStatement("SELECT * FROM CONTACTS",
-//                ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-//        ResultSet resultSet = preparedStatement.executeQuery();
-//
-//        if (resultSet.first()) {
-//            contact = new ContactDTO(resultSet.getInt("ID"),
-//                                    resultSet.getString("FIRSTNAME"),
-//                                    resultSet.getString("MIDDLENAME"),
-//                                    resultSet.getString("LASTNAME"),
-//                                    resultSet.getString("PHONE"), 
-//                                    resultSet.getString("EMAIL"));
-//        }
-//        preparedStatement.close();
-//        return contact;
-//    }
-//    public static ContactDTO last() throws SQLException {
-//        ContactDTO contact = null;
-//        PreparedStatement preparedStatement;
-//        preparedStatement = connection.prepareStatement("SELECT * FROM CONTACTS",
-//                ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-//        ResultSet resultSet = preparedStatement.executeQuery();
-//
-//        if (resultSet.last()) {
-//            contact = new ContactDTO(resultSet.getInt("ID"),
-//                                    resultSet.getString("FIRSTNAME"),
-//                                    resultSet.getString("MIDDLENAME"),
-//                                    resultSet.getString("LASTNAME"),
-//                                    resultSet.getString("PHONE"), 
-//                                    resultSet.getString("EMAIL"));
-//        }
-//        preparedStatement.close();
-//        return contact;
+    private static boolean isPasswordCorrect(String userName, String password) {
+        boolean isCorrect = false;
+        try {
+            connection = DriverManager.getConnection("jdbc:derby://127.0.0.1:1527/TicTacToe", "root", "root");
+            PreparedStatement preparedStatement;
+            preparedStatement = connection.prepareStatement("SELECT * FROM PLAYERS WHERE USERNAME = ?  AND PASSWORD = ?");
+            preparedStatement.setString(1, userName);
+            preparedStatement.setString(2, password);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            isCorrect = resultSet.next();
+            preparedStatement.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return isCorrect;
+
+    }
+
+    public static int update(PlayerDto contact) throws SQLException {
+        int result = 0;
+        PreparedStatement preparedStatement;
+        preparedStatement = connection.prepareStatement("UPDATE PLAYERS SET ...TBD");
+
+        result = preparedStatement.executeUpdate();
+        System.out.println(contact.toString() + " Updated Successfully");
+        preparedStatement.close();
+        return result;
+    }
+
+    public static int delete(String userName) throws SQLException {
+        int result = -1;
+        PreparedStatement preparedStatement;
+        preparedStatement = connection.prepareStatement("DELETE FROM PLAYERS WHERE USERNAME = ?");
+        preparedStatement.setString(1, userName);
+        result = preparedStatement.executeUpdate();
+        preparedStatement.close();
+        return result;
+    }
+
 }
