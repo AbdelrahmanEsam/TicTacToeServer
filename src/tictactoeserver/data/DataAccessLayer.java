@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tictactoeserver.data;
 
 import java.sql.Connection;
@@ -15,6 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.derby.jdbc.ClientDriver;
+import tictactoeserver.data.DTOS.GameDto;
 import tictactoeserver.data.DTOS.PlayerDto;
 
 /**
@@ -24,10 +20,20 @@ import tictactoeserver.data.DTOS.PlayerDto;
 public class DataAccessLayer {
 
     private static Connection connection;
+    private static final int SOCRE_FACTOR = 10; //Player score will be incremented by this factor on win
+
+    static {
+        try {
+            connection = DriverManager.getConnection("jdbc:derby://127.0.0.1:1527/TicTacToe", "root", "root");
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     public static void connect() throws SQLException {
         DriverManager.registerDriver(new ClientDriver());
-        connection = DriverManager.getConnection("jdbc:derby://127.0.0.1:1527/TicTacToe", "root", "root");
+
         System.out.println("Connected to DB");
     }
 
@@ -61,11 +67,11 @@ public class DataAccessLayer {
     public static String login(PlayerDto player) {
         String loginMessage = null;
         if (!isUserExist(player.getPlayerName())) {
-            loginMessage = "NO_SUCH_PLAYER";
+            loginMessage = SQLMessage.NO_SUCH_PLAYER;
         } else {
 
             loginMessage = isPasswordCorrect(player.getPlayerName(), player.getPassword())
-                    ? "LOGIN_SUCCESSFULLY" : "INCORRECT_PASSWORD";
+                    ? SQLMessage.LOGIN_SUCCESSFULLY : SQLMessage.INCORRECT_PASSWORD;
         }
         return loginMessage;
     }
@@ -74,7 +80,7 @@ public class DataAccessLayer {
         String registerMessage = null;
         int insertStatus = 0;
         if (isUserExist(player.getPlayerName())) {
-            registerMessage = "PLAYER_NAME_ALREADY_EXISTS";
+            registerMessage = SQLMessage.PLAYER_NAME_ALREADY_EXISTS;
         } else {
             try {
                 insertStatus = insertNewPlayerIntoDB(player);
@@ -82,7 +88,7 @@ public class DataAccessLayer {
                 Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
             }
             registerMessage = insertStatus == 0
-                    ? "DB_INSERTION_ERROR" : "PLAYER_REGISTERED_SUCCESSFULLY";
+                    ? SQLMessage.DB_INSERTION_ERROR : SQLMessage.PLAYER_REGISTERED_SUCCESSFULLY;
 
         }
         return registerMessage;
@@ -103,7 +109,7 @@ public class DataAccessLayer {
     private static boolean isUserExist(String userName) {
         boolean isExist = false;
         try {
-            connection = DriverManager.getConnection("jdbc:derby://127.0.0.1:1527/TicTacToe", "root", "root");
+//    
             PreparedStatement preparedStatement;
             preparedStatement = connection.prepareStatement("SELECT * FROM PLAYERS WHERE USERNAME = ?");
             preparedStatement.setString(1, userName);
@@ -120,7 +126,7 @@ public class DataAccessLayer {
     private static boolean isPasswordCorrect(String userName, String password) {
         boolean isCorrect = false;
         try {
-            connection = DriverManager.getConnection("jdbc:derby://127.0.0.1:1527/TicTacToe", "root", "root");
+//    
             PreparedStatement preparedStatement;
             preparedStatement = connection.prepareStatement("SELECT * FROM PLAYERS WHERE USERNAME = ?  AND PASSWORD = ?");
             preparedStatement.setString(1, userName);
@@ -135,13 +141,191 @@ public class DataAccessLayer {
 
     }
 
-    public static int update(PlayerDto contact) throws SQLException {
+    public static String UpdatePlayerScore(PlayerDto player) {
+        String updateMessage = null;
+        int result = 0;
+        try {
+
+            PreparedStatement preparedStatement;
+            preparedStatement = connection.prepareStatement("UPDATE PLAYERS SET SCORE = ? WHERE USERNAME = ?");
+            int oldScore = getPlayerOldScore(player.getPlayerName());
+            int newScore = oldScore + SOCRE_FACTOR;
+            preparedStatement.setInt(1, newScore);
+            preparedStatement.setString(2, player.getPlayerName());
+            result = preparedStatement.executeUpdate();
+            updateMessage = result == 0 ? SQLMessage.UPDATE_ERROR : SQLMessage.SCORE_UPDATED;
+            preparedStatement.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return updateMessage;
+    }
+
+    public static String UpdatePlayerGamesWonNumber(PlayerDto player) {
+        String updateMessage = null;
+        int result = 0;
+        try {
+
+            PreparedStatement preparedStatement;
+            preparedStatement = connection.prepareStatement("UPDATE PLAYERS SET GAMESWON = ? WHERE USERNAME = ?");
+            int oldNumber = getPlayerGamesWonNumber(player.getPlayerName());
+            int newNumber = oldNumber + 1;
+            preparedStatement.setInt(1, newNumber);
+            preparedStatement.setString(2, player.getPlayerName());
+            result = preparedStatement.executeUpdate();
+            updateMessage = result == 0 ? SQLMessage.UPDATE_ERROR : SQLMessage.GAMES_WON_NUMBER_UPDATED;
+            preparedStatement.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return updateMessage;
+    }
+
+    public static String UpdatePlayerGamesLostNumber(PlayerDto player) {
+        String updateMessage = null;
+        int result = 0;
+        try {
+
+            PreparedStatement preparedStatement;
+            preparedStatement = connection.prepareStatement("UPDATE PLAYERS SET GAMESLOST = ? WHERE USERNAME = ?");
+            int oldNumber = getPlayerGamesLostNumber(player.getPlayerName());
+            int newNumber = oldNumber + 1;
+            preparedStatement.setInt(1, newNumber);
+            preparedStatement.setString(2, player.getPlayerName());
+            result = preparedStatement.executeUpdate();
+            updateMessage = result == 0 ? SQLMessage.UPDATE_ERROR : SQLMessage.GAMES_LOST_NUMBER_UPDATED;
+            preparedStatement.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return updateMessage;
+    }
+
+    public static String UpdatePlayerGamesDrawnNumber(PlayerDto player) {
+        String updateMessage = null;
+        int result = 0;
+        try {
+
+            PreparedStatement preparedStatement;
+            preparedStatement = connection.prepareStatement("UPDATE PLAYERS SET GAMESDRAWN = ? WHERE USERNAME = ?");
+            int oldNumber = getPlayerGamesDrawnNumber(player.getPlayerName());
+            int newNumber = oldNumber + 1;
+            preparedStatement.setInt(1, newNumber);
+            preparedStatement.setString(2, player.getPlayerName());
+            result = preparedStatement.executeUpdate();
+            updateMessage = result == 0 ? SQLMessage.UPDATE_ERROR : SQLMessage.GAMES_DRAWN_NUMBER_UPDATED;
+            preparedStatement.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return updateMessage;
+    }
+
+    private static int getPlayerOldScore(String playerName) {
+        int storedScore = 0;
+        try {
+
+            PreparedStatement preparedStatement;
+            preparedStatement = connection.prepareStatement("SELECT SCORE FROM PLAYERS WHERE USERNAME = ?");
+            preparedStatement.setString(1, playerName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                storedScore = resultSet.getInt("SCORE");
+                System.out.println("OldScore: " + resultSet.getInt("SCORE"));
+            }
+            preparedStatement.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return storedScore;
+    }
+
+    private static int getPlayerGamesWonNumber(String playerName) {
+        int gamesWon = 0;
+        try {
+
+            PreparedStatement preparedStatement;
+            preparedStatement = connection.prepareStatement("SELECT GAMESWON FROM PLAYERS WHERE USERNAME = ?");
+            preparedStatement.setString(1, playerName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                gamesWon = resultSet.getInt("GAMESWON");
+                System.out.println("Games won: " + resultSet.getInt("GAMESWON"));
+            }
+            preparedStatement.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return gamesWon;
+    }
+
+    private static int getPlayerGamesLostNumber(String playerName) {
+        int gamesLost = 0;
+        try {
+
+            PreparedStatement preparedStatement;
+            preparedStatement = connection.prepareStatement("SELECT GAMESLOST FROM PLAYERS WHERE USERNAME = ?");
+            preparedStatement.setString(1, playerName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                gamesLost = resultSet.getInt("GAMESLOST");
+                System.out.println("Games Lost: " + resultSet.getInt("GAMESLOST"));
+            }
+            preparedStatement.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return gamesLost;
+    }
+
+    private static int getPlayerGamesDrawnNumber(String playerName) {
+        int gamesDrawn = 0;
+        try {
+
+            PreparedStatement preparedStatement;
+            preparedStatement = connection.prepareStatement("SELECT GAMESDRAWN FROM PLAYERS WHERE USERNAME = ?");
+            preparedStatement.setString(1, playerName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                gamesDrawn = resultSet.getInt("GAMESDRAWN");
+                System.out.println("Games Drawn: " + resultSet.getInt("GAMESDRAWN"));
+            }
+            preparedStatement.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return gamesDrawn;
+    }
+
+    public static String insertNewGame(GameDto game) {
+        String insertMessage = null;
+        try {
+            int result = 0;
+
+            PreparedStatement preparedStatement;
+            preparedStatement = connection.prepareStatement("INSERT INTO GAME VALUES (?)");
+            preparedStatement.setString(1, game.getId());
+            result = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            System.out.println("Game " + game.getId() + " Inserted Successfully");
+            insertMessage = result == 0 ? SQLMessage.INSERTION_ERROR : SQLMessage.GAME_ADDED_SUCCESSFULLY;
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return insertMessage;
+    }
+
+    public static int update(PlayerDto player) throws SQLException {
         int result = 0;
         PreparedStatement preparedStatement;
         preparedStatement = connection.prepareStatement("UPDATE PLAYERS SET ...TBD");
 
         result = preparedStatement.executeUpdate();
-        System.out.println(contact.toString() + " Updated Successfully");
+        System.out.println(player.toString() + " Updated Successfully");
         preparedStatement.close();
         return result;
     }
@@ -155,5 +339,4 @@ public class DataAccessLayer {
         preparedStatement.close();
         return result;
     }
-
 }
