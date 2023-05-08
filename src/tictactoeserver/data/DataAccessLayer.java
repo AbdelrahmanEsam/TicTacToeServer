@@ -88,7 +88,7 @@ public class DataAccessLayer {
                 Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
             }
             registerMessage = insertStatus == 0
-                    ? SQLMessage.DB_INSERTION_ERROR : SQLMessage.PLAYER_REGISTERED_SUCCESSFULLY;
+                    ? SQLMessage.INSERTION_ERROR : SQLMessage.PLAYER_REGISTERED_SUCCESSFULLY;
 
         }
         return registerMessage;
