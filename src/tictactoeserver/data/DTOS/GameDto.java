@@ -10,14 +10,18 @@ package tictactoeserver.data.DTOS;
  * @author ASUS
  */
 public class GameDto {
-    
-     public String getId() {
+
+    public GameDto(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
     }
-    
-   String id ; 
+
+    String id;
 }

@@ -10,12 +10,30 @@ package tictactoeserver.data.DTOS;
  * @author ASUS
  */
 public class PlayerDto {
+
     String playerName;
     String password;
     int score;
     int numberOfGameWins;
     int numberOfGameLose;
     int numberOfGameDraws;
+
+    public PlayerDto() {
+    }
+
+    public PlayerDto(String playerName, String password) {
+        this.playerName = playerName;
+        this.password = password;
+    }
+
+    public PlayerDto(String playerName, String password, int score, int numberOfGameWins, int numberOfGameLose, int numberOfGameDraws) {
+        this.playerName = playerName;
+        this.password = password;
+        this.score = score;
+        this.numberOfGameWins = numberOfGameWins;
+        this.numberOfGameLose = numberOfGameLose;
+        this.numberOfGameDraws = numberOfGameDraws;
+    }
 
     public String getPlayerName() {
         return playerName;
@@ -64,6 +82,5 @@ public class PlayerDto {
     public void setNumberOfGameDraws(int numberOfGameDraws) {
         this.numberOfGameDraws = numberOfGameDraws;
     }
-    
-    
+
 }
