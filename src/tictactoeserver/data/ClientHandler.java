@@ -144,16 +144,13 @@ class ClientHandler extends Thread{
    
      private void sendGameRequestToPlayerTwo(String ...params)
      {
-   
-         
        sender.println("cominGameRequest"+" "+params[1]);
-   
      }
    
    
    
      private void sendTheGameResponseToTheFirstPlayer(String ...params)
-      {
+     {
    
    
    
@@ -172,6 +169,20 @@ class ClientHandler extends Thread{
    
     private void requestGameMove(String ...params)
     {
+     String secondPlayerName = params[2];
+     ClientHandler secondPlayerHandler ;
+     onlinePlayers.forEach((player) -> {
+        
+         if(player.getKey().equals(secondPlayerName))
+         {
+         
+             player.getValue(); //todo
+         
+         
+         }
+         
+         
+     });
      
         
      
