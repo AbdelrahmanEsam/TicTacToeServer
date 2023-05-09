@@ -14,7 +14,6 @@ public class SQLMessage {
     public static final String LOGIN_SUCCESSFULLY = "LOGIN_SUCCESSFULLY";
     public static final String INCORRECT_PASSWORD = "INCORRECT_PASSWORD";
     public static final String PLAYER_NAME_ALREADY_EXISTS = "PLAYER_NAME_ALREADY_EXISTS";
-    public static final String DB_INSERTION_ERROR = "DB_INSERTION_ERROR";
     public static final String PLAYER_REGISTERED_SUCCESSFULLY = "PLAYER_REGISTERED_SUCCESSFULLY";
     public static final String UPDATE_ERROR = "UPDATE_ERROR";
     public static final String SCORE_UPDATED = "SCORE_UPDATED";  

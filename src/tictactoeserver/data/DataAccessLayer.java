@@ -88,8 +88,7 @@ public class DataAccessLayer {
                 Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
             }
             registerMessage = insertStatus == 0
-                    ? SQLMessage.DB_INSERTION_ERROR : SQLMessage.PLAYER_REGISTERED_SUCCESSFULLY;
-
+                    ? SQLMessage.INSERTION_ERROR : SQLMessage.PLAYER_REGISTERED_SUCCESSFULLY;
         }
         return registerMessage;
     }
@@ -97,7 +96,7 @@ public class DataAccessLayer {
     static private int insertNewPlayerIntoDB(PlayerDto player) throws SQLException {
         int result = 0;
         PreparedStatement preparedStatement;
-        preparedStatement = connection.prepareStatement("INSERT INTO PLAYERS VALUES (?, ?)");
+        preparedStatement = connection.prepareStatement("INSERT INTO PLAYERS VALUES (?,?,0,0,0,0)");
         preparedStatement.setString(1, player.getPlayerName());
         preparedStatement.setString(2, player.getPassword());
         result = preparedStatement.executeUpdate();
@@ -307,8 +306,9 @@ public class DataAccessLayer {
             int result = 0;
 
             PreparedStatement preparedStatement;
-            preparedStatement = connection.prepareStatement("INSERT INTO GAME VALUES (?)");
+            preparedStatement = connection.prepareStatement("INSERT INTO GAME VALUES (?) WHERE NOT EXISTS SELECT 1 FROM GAME WHERE GAME_ID = ?");
             preparedStatement.setString(1, game.getId());
+            preparedStatement.setString(2, game.getId());
             result = preparedStatement.executeUpdate();
             preparedStatement.close();
             System.out.println("Game " + game.getId() + " Inserted Successfully");
