@@ -12,25 +12,29 @@ import java.net.Socket;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.util.Pair;
 import tictactoeserver.data.DTOS.MatchDto;
 import tictactoeserver.data.DTOS.PlayerDto;
 
 class ClientHandler extends Thread{
-     static Vector<ClientHandler> handlers = new Vector();
-    static Vector<PlayerDto> onlinePlayers = new Vector();
+    static Vector<Pair<String,ClientHandler>> onlinePlayers = new Vector();
     static Vector<MatchDto> onlineMatches = new Vector();
     DataInputStream listener = null;
     PrintStream sender = null;
+    
+    
+    
   
    public ClientHandler(Socket newClient)
    {
    
-       
-       try {
+    try {
            listener = new DataInputStream(newClient.getInputStream());
            sender = new PrintStream(newClient.getOutputStream());
            
-           ClientHandler.handlers.add(this);
+        
+       
+       //todo 
            start();
        } catch (IOException ex) {
            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -72,7 +76,7 @@ class ClientHandler extends Thread{
                     case "acceptGameRequest":
                     {
                         
-                      sendGameRequestPlayerOne(comingMessage);
+                      acceptGameRequestPlayerOne(comingMessage);
                         break;
                     }
                     
@@ -80,7 +84,7 @@ class ClientHandler extends Thread{
                     case "sendGameRequest":
                     {
                         
-                      sendGameRequestToPlayerTwo(comingMessage);
+                        sendGameRequestToPlayerTwo(comingMessage);
                         break;
                     }
                     
@@ -107,15 +111,8 @@ class ClientHandler extends Thread{
                     }
                     
                 }
-                  
-              
-    
-       
            }
                 }
-              
-          
-       
        } catch (IOException ex) {
            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
        }
@@ -125,22 +122,22 @@ class ClientHandler extends Thread{
    
    private void online(String ...params)
    {
-       onlinePlayers.add(new PlayerDto());
+        ClientHandler.onlinePlayers.add(new Pair(params[1],this));
    
    }
    
    
    private void offline(String ...params)
    {
-      onlinePlayers.removeIf(player -> params[1].equals(player.getPlayerName()));
+      onlinePlayers.removeIf(player -> params[1].equals(params[1]));
       //todo notify the other (if there) that the other player is offline now
    }
    
    
-     private void sendGameRequestPlayerOne(String ...params)
+     private void acceptGameRequestPlayerOne(String ...params)
      {
    
-         
+       
    
      }
    
@@ -149,7 +146,7 @@ class ClientHandler extends Thread{
      {
    
          
-   
+       sender.println("cominGameRequest"+" "+params[1]);
    
      }
    
@@ -176,7 +173,7 @@ class ClientHandler extends Thread{
     private void requestGameMove(String ...params)
     {
      
-     
+        
      
     }
     
