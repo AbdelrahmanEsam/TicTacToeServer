@@ -13,11 +13,11 @@ public class TicTacToeServer extends Application {
    static ServerSocket serverSocket;
     @Override
     public void start(Stage stage) throws Exception {
-       new Thread(() -> {
+    
                   
-                       new Server();
+                      Server.getInstance();
                   
-               }).start();
+            
         Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
