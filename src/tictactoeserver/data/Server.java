@@ -36,11 +36,7 @@ public class Server extends Thread{
             
                       }
             } catch (IOException ex) {
-                
-                
-                
-                
-              
+                           
             }
        
     }

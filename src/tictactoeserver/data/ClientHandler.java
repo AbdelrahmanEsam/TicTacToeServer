@@ -9,6 +9,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -94,13 +96,14 @@ class ClientHandler extends Thread{
                     {
                         
                       requestGameMove(comingMessage);
-                        break;
+                      break;
                     }
                     
                     
                     case "acceptGameResult":
                     {
                     
+                        acceptGameResult(comingMessage);
                         break;
                     }
                     
@@ -120,16 +123,17 @@ class ClientHandler extends Thread{
    }
    
    
-   private void online(String ...params)
+   private void online(String request)
    {
-        ClientHandler.onlinePlayers.add(new Pair(params[1],this));
+    
+        ClientHandler.onlinePlayers.add(new Pair(request.split(" ")[1],this));
    
    }
    
    
-   private void offline(String ...params)
+   private void offline(String request)
    {
-      onlinePlayers.removeIf(player -> params[1].equals(params[1]));
+     
       //todo notify the other (if there) that the other player is offline now
    }
    
@@ -142,9 +146,9 @@ class ClientHandler extends Thread{
      }
    
    
-     private void sendGameRequestToPlayerTwo(String ...params)
+     private void sendGameRequestToPlayerTwo(String request)
      {
-       sender.println("cominGameRequest"+" "+params[1]);
+       sender.println("cominGameRequest"+" "+request.split(" ")[1]);
      }
    
    
@@ -159,7 +163,7 @@ class ClientHandler extends Thread{
    
  
    
-     private void gameHandler(String ...params)
+     private void gameHandler(String request)
      {
    
    
@@ -167,49 +171,72 @@ class ClientHandler extends Thread{
      }
    
    
-    private void requestGameMove(String ...params)
+    private void requestGameMove(String request)
     {
-     String secondPlayerName = params[2];
-     ClientHandler secondPlayerHandler ;
-     onlinePlayers.forEach((player) -> {
+     String secondPlayerName = request.split(" ")[1];
+     ClientHandler clientHandler= getClientHandler(secondPlayerName);
+     
+     if(clientHandler != null){
+       clientHandler.sendMoveResponse(Integer.valueOf(request.split(" ")[2])
+                     , Integer.valueOf(request.split(" ")[3]));
+     }else{
+          opponentIsOffline();
+     }
+    }
+    
+    
+   private void opponentIsOffline()
+   {
+   
+       sender.println("your opponent is offline you are the winner");
+       //todo add a game one to him in database and handle
+       //if the first player is offline too then drop the game 
+   
+   }
+    
+    
+    
+    private void sendMoveResponse(int row , int column)
+    {
+    
+        sender.println("acceptMoveResponse"+" "+row+" "+column);
+    
+    }
+    
+    
+    private void acceptGameResult(String comingMessage) {
+       
+        //todo add the result to database
+        ClientHandler clientHandlerOne = getClientHandler(comingMessage.split(" ")[1]);
+         ClientHandler clientHandlerTwo = getClientHandler(comingMessage.split(" ")[2]);
+        clientHandlerOne.sendGameResult("gameResultResponse"+" "+comingMessage.split(" ")[3]);
+        clientHandlerTwo.sendGameResult("gameResultResponse"+" "+comingMessage.split(" ")[3]);
         
-         if(player.getKey().equals(secondPlayerName))
+    }
+    
+    private void sendGameResult(String comingMessage)
+    { 
+     sender.println(comingMessage);
+    }
+    
+    
+    private ClientHandler getClientHandler(String playerName)
+    {
+    
+         int index = 0 ;
+          while(index < onlinePlayers.size())
+     {
+      if(onlinePlayers.get(index).getKey().equals(playerName))
          {
-         
-             player.getValue(); //todo
-         
-         
+           return onlinePlayers.get(index).getValue();
+  
          }
-         
-         
-     });
-     
-        
-     
+      index++;
+     }
+          return null;
     }
+
     
-    private void sendGameResult(String ...params)
-    {
-     
-     
-     
-    }
-    
-    
-    private void updateDatabase(String ...params)
-    {
-     
-     
-     
-    }
-    
-    
-    private void gameMoveObserver()
-    {
-    
-    
-    
-    }
     
      
      
