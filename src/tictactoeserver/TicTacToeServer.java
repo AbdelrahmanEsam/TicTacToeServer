@@ -15,7 +15,7 @@ public class TicTacToeServer extends Application {
     public void start(Stage stage) throws Exception {
     
                   
-                      Server.getInstance();
+                      Server.getInstance().start();
                   
             
         Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
