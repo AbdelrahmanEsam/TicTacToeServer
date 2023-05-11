@@ -43,7 +43,7 @@ class ClientHandler extends Thread {
             start();
         } catch (IOException ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        }
     }
 
     public void run() {
@@ -58,31 +58,6 @@ class ClientHandler extends Thread {
                     if (comingMessage != null) {
 
                         switch (comingMessage.split(" ")[0]) {
-
-                            case "online": {
-
-                                online(comingMessage);
-
-                                break;
-                            }
-
-                            case "offline": {
-
-                                offline(comingMessage);
-                                break;
-                            }
-
-                            case "acceptGameRequest": {
-
-                                acceptGameRequestPlayerOne(comingMessage);
-                                break;
-                            }
-
-                            case "sendGameRequest": {
-
-                                sendGameRequestToPlayerTwo(comingMessage);
-                                break;
-                            }
 
                             case "acceptMoveRequest": {
 
@@ -131,40 +106,13 @@ class ClientHandler extends Thread {
                 }
             }
         } catch (IOException ex) {
-           try {
+            try {
                 listener.close();
                 sender.close();
             } catch (IOException e) {
 
             }
-        } 
-
-    }
-
-    private void online(String request) {
-
-        ClientHandler.onlinePlayers.add(new Pair(request.split(" ")[1], this));
-
-    }
-
-    private void offline(String request) {
-
-        //todo notify the other (if there) that the other player is offline now
-    }
-
-    private void acceptGameRequestPlayerOne(String... params) {
-
-    }
-
-    private void sendGameRequestToPlayerTwo(String request) {
-        sender.println("cominGameRequest" + " " + request.split(" ")[1]);
-    }
-
-    private void sendTheGameResponseToTheFirstPlayer(String... params) {
-
-    }
-
-    private void gameHandler(String request) {
+        }
 
     }
 
@@ -282,14 +230,7 @@ class ClientHandler extends Thread {
             case ClientMessage.GET:
                 sendPlayersList();
                 break;
-            case ClientMessage.SEND_GAME_REQUEST:
-                sendPlayRequest();
-                break;
-            case ClientMessage.ACCEPT_GAME_REQUEST:
-                acceptRequest();
-                break;
-            case ClientMessage.REJECT_GAME_REQUEST:
-                denyRequest();
+
         }
 
     }
@@ -298,27 +239,18 @@ class ClientHandler extends Thread {
         if (onlinePlayers.isEmpty()) {
             sender.println(ServerMessage.AVILABLE_PLAYERS + " " + ServerMessage.NO_DATA);
         } else {
-            sender.println(ServerMessage.AVILABLE_PLAYERS + " " + ServerMessage.POST);
+            StringBuilder players = new StringBuilder();
+            players.append(ServerMessage.AVILABLE_PLAYERS + " ");
             for (Pair<String, ClientHandler> player : onlinePlayers) {
                 String playerName = player.getKey();
+                System.out.println(playerName);
                 if (!onlineMatches.contains(playerName)) {
 
-                    sender.println(playerName);
+                    players.append(playerName + " ");
                 }
-            }
+            }sender.println(players.toString());
+            
         }
-    }
-
-    private void sendPlayRequest() {
-//       sender.println(ServerMessage.AVILABLE_PLAYERS + " "+ ServerMessage.SEND_REQUEST + );
-    }
-
-    private void acceptRequest() {
-//        getClientHandler(playerName).sender.println(ServerMessage.ACCEPTED);
-    }
-
-    private void denyRequest() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void sendGameRequest(String comingMessage) {
