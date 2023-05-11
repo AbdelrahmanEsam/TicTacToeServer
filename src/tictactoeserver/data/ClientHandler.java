@@ -106,6 +106,17 @@ class ClientHandler extends Thread{
                         acceptGameResult(comingMessage);
                         break;
                     }
+                     case "Register": {
+
+                            validateRegistrationCredentials(comingMessage);
+                            break;
+
+                        }
+                        case "Login": {
+
+                            validateLoginCredentials(comingMessage);
+
+                        }
                     
                     default:{
                     
@@ -234,6 +245,56 @@ class ClientHandler extends Thread{
       index++;
      }
           return null;
+    }
+private void validateRegistrationCredentials(String line) {
+        //To DO check whether username is already registered in DB
+        String credentials[] = line.split(" ");
+        PlayerDto player = new PlayerDto(credentials[1], credentials[2]);
+        String registrationResponse = DataAccessLayer.register(player);
+        switch (registrationResponse) {
+            case SQLMessage.PLAYER_REGISTERED_SUCCESSFULLY:
+                registrationResponse = "Successful";
+                break;
+            case SQLMessage.PLAYER_NAME_ALREADY_EXISTS:
+                registrationResponse = "Failed Username";
+                break;
+            case SQLMessage.INCORRECT_PASSWORD:
+                registrationResponse = "Failed Password";
+                break;
+            default:
+                registrationResponse = "Error";
+        }
+        sendRegistartionResponse(registrationResponse);
+    }
+
+    private void sendRegistartionResponse(String response) {
+        System.out.println("Register " + response);
+        sender.println("Register " + response);
+    }
+
+    private void validateLoginCredentials(String line) {
+        //To DO check whether username is already registered in DB
+        String credentials[] = line.split(" ");
+        PlayerDto player = new PlayerDto(credentials[1], credentials[2]);
+        String loginResponse = DataAccessLayer.login(player);
+        switch (loginResponse) {
+            case SQLMessage.LOGIN_SUCCESSFULLY:
+                loginResponse = "Successful";
+                break;
+            case SQLMessage.NO_SUCH_PLAYER:
+                loginResponse = "Failed Username";
+                break;
+            case SQLMessage.INCORRECT_PASSWORD:
+                loginResponse = "Failed Password";
+                break;
+            default:
+                loginResponse = "Error";
+        }
+        sendLoginResponse(loginResponse);
+    }
+
+    private void sendLoginResponse(String str) {
+        sender.println("Login " + str);
     }
 
     
