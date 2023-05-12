@@ -15,12 +15,17 @@ public class TicTacToeServer extends Application {
    static ServerSocket serverSocket;
     @Override
     public void start(Stage stage) throws Exception {
-       new Thread(() -> {
+    
                   
-                       new Server();
+                      Server.getInstance().start();
                   
+
                }).start();
         Parent root = new ServerViewController(new ServerViewModel());
+
+            
+      
+
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();

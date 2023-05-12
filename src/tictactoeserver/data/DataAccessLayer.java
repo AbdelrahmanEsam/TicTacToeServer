@@ -88,8 +88,7 @@ public class DataAccessLayer {
                 Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
             }
             registerMessage = insertStatus == 0
-                    ? SQLMessage.DB_INSERTION_ERROR : SQLMessage.PLAYER_REGISTERED_SUCCESSFULLY;
-
+                    ? SQLMessage.INSERTION_ERROR : SQLMessage.PLAYER_REGISTERED_SUCCESSFULLY;
         }
         return registerMessage;
     }
@@ -97,12 +96,12 @@ public class DataAccessLayer {
     static private int insertNewPlayerIntoDB(PlayerDto player) throws SQLException {
         int result = 0;
         PreparedStatement preparedStatement;
-        preparedStatement = connection.prepareStatement("INSERT INTO PLAYERS VALUES (?, ?)");
+        preparedStatement = connection.prepareStatement("INSERT INTO PLAYERS VALUES (?,?,0,0,0,0)");
         preparedStatement.setString(1, player.getPlayerName());
         preparedStatement.setString(2, player.getPassword());
         result = preparedStatement.executeUpdate();
         preparedStatement.close();
-        System.out.println(player.getPlayerName() + " Inserted Successfully");
+//        System.out.println(player.getPlayerName() + " Inserted Successfully");
         return result;
     }
 
@@ -141,17 +140,17 @@ public class DataAccessLayer {
 
     }
 
-    public static String UpdatePlayerScore(PlayerDto player) {
+    public static String UpdatePlayerScore(String playerName) {
         String updateMessage = null;
         int result = 0;
         try {
 
             PreparedStatement preparedStatement;
             preparedStatement = connection.prepareStatement("UPDATE PLAYERS SET SCORE = ? WHERE USERNAME = ?");
-            int oldScore = getPlayerOldScore(player.getPlayerName());
+            int oldScore = getPlayerOldScore(playerName);
             int newScore = oldScore + SOCRE_FACTOR;
             preparedStatement.setInt(1, newScore);
-            preparedStatement.setString(2, player.getPlayerName());
+            preparedStatement.setString(2, playerName);
             result = preparedStatement.executeUpdate();
             updateMessage = result == 0 ? SQLMessage.UPDATE_ERROR : SQLMessage.SCORE_UPDATED;
             preparedStatement.close();
@@ -162,17 +161,17 @@ public class DataAccessLayer {
         return updateMessage;
     }
 
-    public static String UpdatePlayerGamesWonNumber(PlayerDto player) {
+    public static String UpdatePlayerGamesWonNumber(String playerName) {
         String updateMessage = null;
         int result = 0;
         try {
 
             PreparedStatement preparedStatement;
             preparedStatement = connection.prepareStatement("UPDATE PLAYERS SET GAMESWON = ? WHERE USERNAME = ?");
-            int oldNumber = getPlayerGamesWonNumber(player.getPlayerName());
+            int oldNumber = getPlayerGamesWonNumber(playerName);
             int newNumber = oldNumber + 1;
             preparedStatement.setInt(1, newNumber);
-            preparedStatement.setString(2, player.getPlayerName());
+            preparedStatement.setString(2, playerName);
             result = preparedStatement.executeUpdate();
             updateMessage = result == 0 ? SQLMessage.UPDATE_ERROR : SQLMessage.GAMES_WON_NUMBER_UPDATED;
             preparedStatement.close();
@@ -183,17 +182,17 @@ public class DataAccessLayer {
         return updateMessage;
     }
 
-    public static String UpdatePlayerGamesLostNumber(PlayerDto player) {
+    public static String UpdatePlayerGamesLostNumber(String playerName) {
         String updateMessage = null;
         int result = 0;
         try {
 
             PreparedStatement preparedStatement;
             preparedStatement = connection.prepareStatement("UPDATE PLAYERS SET GAMESLOST = ? WHERE USERNAME = ?");
-            int oldNumber = getPlayerGamesLostNumber(player.getPlayerName());
+            int oldNumber = getPlayerGamesLostNumber(playerName);
             int newNumber = oldNumber + 1;
             preparedStatement.setInt(1, newNumber);
-            preparedStatement.setString(2, player.getPlayerName());
+            preparedStatement.setString(2, playerName);
             result = preparedStatement.executeUpdate();
             updateMessage = result == 0 ? SQLMessage.UPDATE_ERROR : SQLMessage.GAMES_LOST_NUMBER_UPDATED;
             preparedStatement.close();
@@ -204,17 +203,17 @@ public class DataAccessLayer {
         return updateMessage;
     }
 
-    public static String UpdatePlayerGamesDrawnNumber(PlayerDto player) {
+    public static String UpdatePlayerGamesDrawnNumber(String playerName) {
         String updateMessage = null;
         int result = 0;
         try {
 
             PreparedStatement preparedStatement;
             preparedStatement = connection.prepareStatement("UPDATE PLAYERS SET GAMESDRAWN = ? WHERE USERNAME = ?");
-            int oldNumber = getPlayerGamesDrawnNumber(player.getPlayerName());
+            int oldNumber = getPlayerGamesDrawnNumber(playerName);
             int newNumber = oldNumber + 1;
             preparedStatement.setInt(1, newNumber);
-            preparedStatement.setString(2, player.getPlayerName());
+            preparedStatement.setString(2, playerName);
             result = preparedStatement.executeUpdate();
             updateMessage = result == 0 ? SQLMessage.UPDATE_ERROR : SQLMessage.GAMES_DRAWN_NUMBER_UPDATED;
             preparedStatement.close();
@@ -301,17 +300,18 @@ public class DataAccessLayer {
         return gamesDrawn;
     }
 
-    public static String insertNewGame(GameDto game) {
+    public static String insertNewGame(String gameId) {
         String insertMessage = null;
         try {
             int result = 0;
 
             PreparedStatement preparedStatement;
-            preparedStatement = connection.prepareStatement("INSERT INTO GAME VALUES (?)");
-            preparedStatement.setString(1, game.getId());
+            preparedStatement = connection.prepareStatement("INSERT INTO GAME VALUES (?) WHERE NOT EXISTS SELECT 1 FROM GAME WHERE GAME_ID = ?");
+            preparedStatement.setString(1, gameId);
+            preparedStatement.setString(2, gameId);
             result = preparedStatement.executeUpdate();
             preparedStatement.close();
-            System.out.println("Game " + game.getId() + " Inserted Successfully");
+            System.out.println("Game " + gameId + " Inserted Successfully");
             insertMessage = result == 0 ? SQLMessage.INSERTION_ERROR : SQLMessage.GAME_ADDED_SUCCESSFULLY;
         } catch (SQLException ex) {
             Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);

@@ -13,30 +13,59 @@ import java.net.Socket;
  *
  * @author ASUS
  */
-public class Server {
-
+public class Server extends Thread{
     
-        ServerSocket server;
+   private static Server instance = null;
+    private ServerSocket server;
+    
+
+    @Override
+    public void run() {
+        super.run(); 
         
-      public Server()
-      {
-        System.out.println("init");
+        
+           
             try {
-                System.out.println("init");
+              
                 server = new ServerSocket(4004);
+                System.out.println("Server UP");
                  while(true){
             
                         Socket accepted = server.accept();
                     
-                        new ClientHandler(accepted);
+                    ClientHandler clientHandler = new ClientHandler(accepted);
             
                       }
             } catch (IOException ex) {
-              
+                           
             }
        
+    }
+
+    
+    
+    
+        
+        
+      private Server()
+      {
+    
       
       
+      }
+      
+      
+      public static synchronized Server getInstance()
+      {
+      
+             if(instance == null)
+             {
+             
+                 instance = new Server(); 
+             
+             }
+            
+             return instance;
       }
   
     
