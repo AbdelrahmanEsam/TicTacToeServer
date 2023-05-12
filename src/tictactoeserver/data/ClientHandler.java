@@ -94,7 +94,12 @@ class ClientHandler extends Thread {
                             case ClientMessage.REJECT_GAME_REQUEST:
                                 rejectGameResponse(comingMessage);
                                 break;
-
+                            case "ReplayRequest":
+                                replayRequest(comingMessage);
+                                break;
+                            case "ReplayResponse":
+                                replayResponse(comingMessage);
+                                break;
                             default: {
 
                                 System.out.println("defualt");
@@ -143,15 +148,25 @@ class ClientHandler extends Thread {
     }
 
     private void acceptGameResult(String comingMessage) {
+        String gameResult = comingMessage.split(" ")[3];
         String playerOne = comingMessage.split(" ")[1];
         String playerTwo = comingMessage.split(" ")[2];
+        if(gameResult.equals("draw")){
+            DataAccessLayer.UpdatePlayerGamesDrawnNumber(playerOne);
+        }
+        else{
+            DataAccessLayer.UpdatePlayerGamesWonNumber(playerOne);
+            DataAccessLayer.UpdatePlayerGamesLostNumber(playerTwo);
+            DataAccessLayer.UpdatePlayerScore(playerOne);
+        }
+        
         onlineMatches.remove(playerOne);
         onlineMatches.remove(playerTwo);
         //todo add the result to database
         ClientHandler clientHandlerOne = getClientHandler(playerOne);
         ClientHandler clientHandlerTwo = getClientHandler(playerTwo);
-        clientHandlerOne.sendGameResult("gameResultResponse" + " " + comingMessage.split(" ")[3]);
-        clientHandlerTwo.sendGameResult("gameResultResponse" + " " + comingMessage.split(" ")[3]);
+        clientHandlerOne.sendGameResult("gameResultResponse" + " " + gameResult);
+        clientHandlerTwo.sendGameResult("gameResultResponse" + " " + gameResult);
 
     }
 
@@ -248,8 +263,9 @@ class ClientHandler extends Thread {
 
                     players.append(playerName + " ");
                 }
-            }sender.println(players.toString());
-            
+            }
+            sender.println(players.toString());
+
         }
     }
 
@@ -275,6 +291,16 @@ class ClientHandler extends Thread {
         String senderName = comingMessage.split(" ")[1];
         String receiverName = comingMessage.split(" ")[2];
         getClientHandler(receiverName).sender.println(ServerMessage.DENIED_GAME_RESPONSE + " " + senderName);
+    }
+
+    private void replayRequest(String comingMessage) {
+        String senderName = comingMessage.split(" ")[1];
+        String receiverName = comingMessage.split(" ")[2];
+        getClientHandler(receiverName).sender.println("forwardReplayRequest" + " " + senderName);
+    }
+
+    private void replayResponse(String comingMessage) {
+        getClientHandler(comingMessage.split(" ")[1]).sender.println("ReplayResutl" + " " + comingMessage.split(" ")[2]);
     }
 
 }
