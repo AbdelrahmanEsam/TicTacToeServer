@@ -55,6 +55,7 @@ public class ClientHandler extends Thread {
     public void run() {
 
         String comingMessage = null;
+        
 
         try {
             while (serverState.get()) {
@@ -120,6 +121,9 @@ public class ClientHandler extends Thread {
             try {
                 listener.close();
                 sender.close();
+                String playerName = getNameByHandler();
+                onlinePlayers.removeIf(player -> player.getKey().equals(playerName));
+                onlinePlayersNames.removeIf(player -> player.equals(playerName));
             } catch (IOException e) {
 
             }
@@ -192,6 +196,23 @@ public class ClientHandler extends Thread {
             index++;
         }
         return null;
+    }
+    
+    
+    private String getNameByHandler()
+    {
+    
+          int index = 0;
+        while (index < onlinePlayers.size()) {
+            if (onlinePlayers.get(index).getValue().equals(this)) {
+                return onlinePlayers.get(index).getKey();
+
+            }
+            index++;
+        }
+        
+        return null;
+    
     }
 
     private void validateRegistrationCredentials(String line) {

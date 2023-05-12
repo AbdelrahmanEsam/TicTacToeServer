@@ -144,19 +144,11 @@ gridPane.add(hbox, 0, 1, 2, 1);
     {
     
         viewModel.getServerState().addListener((observable, oldValue, newValue) -> {
- 
-            
-          
+
                 listView.setVisible(newValue);
                 pieChart.setVisible(newValue);
 
         });
-        
-        
-     
-        
-   
-    
     }
     
     
@@ -191,7 +183,7 @@ gridPane.add(hbox, 0, 1, 2, 1);
            
            
         });
-        switchToggle.setSwitchState(true);
+                switchToggle.setSwitchState(true);
                 switchToggle.setSwitchState(false);
 
     

@@ -85,7 +85,7 @@ public class ServerViewModel {
     
         
        ClientHandler.onlinePlayersNames.addListener((ListChangeListener.Change<? extends String> change) -> {
-       
+        
             while (change.next()) {
                 if (change.wasAdded()) {
                     onlinePlayersNames.addAll(change.getAddedSubList());
@@ -93,6 +93,8 @@ public class ServerViewModel {
             }
            
         });
+       
+      
     
     
     }
