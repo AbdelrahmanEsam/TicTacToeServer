@@ -7,6 +7,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import tictactoeserver.presentation.ServerViewController;
+import tictactoeserver.presentation.ServerViewModel;
 
 
 public class TicTacToeServer extends Application {
@@ -18,7 +20,7 @@ public class TicTacToeServer extends Application {
                        new Server();
                   
                }).start();
-        Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+        Parent root = new ServerViewController(new ServerViewModel());
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
