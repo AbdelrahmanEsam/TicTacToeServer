@@ -20,17 +20,15 @@ public class TicTacToeServer extends Application {
                       Server.getInstance().start();
                   
 
-               }).start();
+               
+               
         Parent root = new ServerViewController(new ServerViewModel());
-
-            
-      
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+    
     }
-
 
     public static void main(String[] args) {
         launch(args);
