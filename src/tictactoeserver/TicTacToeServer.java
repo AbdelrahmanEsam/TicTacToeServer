@@ -17,7 +17,7 @@ public class TicTacToeServer extends Application {
     public void start(Stage stage) throws Exception {
     
                   
-                      Server.getInstance().start();
+                      
                   
 
                
