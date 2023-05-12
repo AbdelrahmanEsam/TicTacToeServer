@@ -1,11 +1,16 @@
 
 package tictactoeserver.presentation;
 
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.chart.PieChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
@@ -13,6 +18,8 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
+import tictactoeserver.data.ClientHandler;
+import tictactoeserver.data.DataAccessLayer;
 
 public  class ServerViewController extends BorderPane {
 
@@ -26,9 +33,8 @@ public  class ServerViewController extends BorderPane {
     protected final Label label;
     protected final PieChart pieChart;
     protected final ListView listView;
-       ObservableList<String> data = FXCollections.observableArrayList();
-
-   ServerViewModel viewModel; 
+    private SwitchButton switchToggle ;
+   private ServerViewModel viewModel; 
      
      
     
@@ -47,6 +53,7 @@ public  class ServerViewController extends BorderPane {
         label = new Label();
         pieChart = new PieChart();
         listView = new ListView();
+        
 
         setMaxHeight(USE_PREF_SIZE);
         setMaxWidth(USE_PREF_SIZE);
@@ -101,11 +108,13 @@ public  class ServerViewController extends BorderPane {
         gridPane0.getChildren().add(label);
         gridPane.getChildren().add(gridPane0);
 
-    SwitchButton button = new SwitchButton();
+        switchToggle = new SwitchButton();
+       
+    
     
 //    button
         
-    HBox hbox = new HBox(button);
+    HBox hbox = new HBox(switchToggle);
     hbox.setAlignment(Pos.TOP_CENTER);
     
   //hbox.setAlignment(Pos.TOP_CENTER);
@@ -120,8 +129,72 @@ gridPane.add(hbox, 0, 1, 2, 1);
 
  //  gridPane.add(hbox, 0, 2, 2, 2);
     
+ 
       setPieChart();
-      setOnlinePlayers();
+      serverStateListener();
+      switchToggleObserver();
+      onlinePlayersObserver();
+   
+    }
+    
+    
+    
+    
+    private void serverStateListener()
+    {
+    
+        viewModel.getServerState().addListener((observable, oldValue, newValue) -> {
+ 
+            
+          
+                listView.setVisible(newValue);
+                pieChart.setVisible(newValue);
+
+        });
+        
+        
+     
+        
+   
+    
+    }
+    
+    
+    private void onlinePlayersObserver()
+    {
+        try {
+            listView.getItems().addAll(DataAccessLayer.getAllPlayers());
+        } catch (SQLException ex) {
+            Logger.getLogger(ServerViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+     viewModel.getOnlinePlayersNames().addListener((ListChangeListener.Change<? extends String> change) -> {
+       
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    listView.getItems().addAll(change.getAddedSubList());
+                }
+            }
+           
+        });
+    
+    
+    }
+    
+    private void switchToggleObserver()
+    {
+    
+        
+        switchToggle.getSwitchState().addListener((observable, oldValue, newValue) -> {
+           
+             
+               viewModel.setServerState(newValue);
+           
+           
+        });
+        switchToggle.setSwitchState(true);
+                switchToggle.setSwitchState(false);
+
+    
         
     }
     
@@ -140,19 +213,7 @@ gridPane.add(hbox, 0, 1, 2, 1);
     
     
     
-    private void setOnlinePlayers()
-    {
-    
-          data.addAll("A", "B", "C", "D", "E");
-
-        listView.setEditable(false);
-        listView.setMouseTransparent( true );
-        listView.setFocusTraversable( false );
-       listView.setItems(data);
-    
-    
-    
-    }
+   
     
     
     

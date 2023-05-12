@@ -8,6 +8,7 @@ package tictactoeserver.data;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  *
@@ -17,23 +18,22 @@ public class Server extends Thread{
     
    private static Server instance = null;
     private ServerSocket server;
-    
+    SimpleBooleanProperty state = new SimpleBooleanProperty();
 
     @Override
     public void run() {
         super.run(); 
         
         
-           
+           state.set(true);
             try {
               
                 server = new ServerSocket(4004);
-                System.out.println("Server UP");
                  while(true){
             
                         Socket accepted = server.accept();
                     
-                    ClientHandler clientHandler = new ClientHandler(accepted);
+                  new ClientHandler(accepted);
             
                       }
             } catch (IOException ex) {
@@ -41,6 +41,23 @@ public class Server extends Thread{
             }
        
     }
+
+    public SimpleBooleanProperty getServerState() {
+        return state;
+    }
+
+    public void setState(SimpleBooleanProperty state) {
+        this.state = state;
+    }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        state.set(false);
+    }
+    
+    
+    
 
     
     
@@ -58,6 +75,7 @@ public class Server extends Thread{
       public static synchronized Server getInstance()
       {
       
+         
              if(instance == null)
              {
              

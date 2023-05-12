@@ -42,21 +42,16 @@ public class DataAccessLayer {
         connection.close();
     }
 
-    public static List<PlayerDto> getAllPlayers() throws SQLException {
-        List<PlayerDto> allPlayers = new ArrayList<>();
+    public static List<String> getAllPlayers() throws SQLException {
+        List<String> allPlayers = new ArrayList<>();
 
         PreparedStatement preparedStatement;
         preparedStatement = connection.prepareStatement("SELECT * FROM PLAYERS");
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-            PlayerDto c = new PlayerDto(resultSet.getString("USERNAME"),
-                    resultSet.getString("PASSWORD"),
-                    resultSet.getInt("SCORE"),
-                    resultSet.getInt("GAMESWON"),
-                    resultSet.getInt("GAMESLOST"),
-                    resultSet.getInt("GAMESDRAWN"));
-            allPlayers.add(c);
+            String  playerName = resultSet.getString("USERNAME");
+            allPlayers.add(playerName);
 
         }
         preparedStatement.close();

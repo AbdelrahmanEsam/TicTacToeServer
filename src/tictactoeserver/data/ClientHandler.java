@@ -14,6 +14,10 @@ import java.util.Collections;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.util.Pair;
 import static jdk.nashorn.tools.ShellFunctions.input;
 import tictactoeserver.data.DTOS.MatchDto;
@@ -21,13 +25,15 @@ import tictactoeserver.data.DTOS.PlayerDto;
 import tictactoeserver.data.stream_messages.ClientMessage;
 import tictactoeserver.data.stream_messages.ServerMessage;
 
-class ClientHandler extends Thread {
+public class ClientHandler extends Thread {
 
     static Vector<Pair<String, ClientHandler>> onlinePlayers = new Vector();
     static Vector<String> onlineMatches = new Vector();
     DataInputStream listener = null;
     PrintStream sender = null;
     Socket newClient;
+    public static SimpleBooleanProperty serverState = new SimpleBooleanProperty();
+     public static ObservableList<String> onlinePlayersNames = FXCollections.observableArrayList();
 
     public ClientHandler() {
     }
@@ -51,7 +57,7 @@ class ClientHandler extends Thread {
         String comingMessage = null;
 
         try {
-            while (true) {
+            while (serverState.get()) {
                 if (!newClient.isClosed()) {
 
                     comingMessage = listener.readLine();
@@ -171,6 +177,7 @@ class ClientHandler extends Thread {
     }
 
     private void sendGameResult(String comingMessage) {
+        
         sender.println(comingMessage);
     }
 
@@ -221,6 +228,7 @@ class ClientHandler extends Thread {
         switch (loginResponse) {
             case SQLMessage.LOGIN_SUCCESSFULLY:
                 onlinePlayers.add(new Pair(player.getPlayerName(), this));
+                onlinePlayersNames.add(player.getPlayerName());
                 loginResponse = "Successful";
                 break;
             case SQLMessage.NO_SUCH_PLAYER:
