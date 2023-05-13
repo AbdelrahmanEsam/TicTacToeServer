@@ -138,11 +138,7 @@ gridPane.add(hbox, 0, 1, 2, 1);
     }
 
     private void onlinePlayersObserver() {
-        try {
-            listView.getItems().addAll(DataAccessLayer.getAllPlayers());
-        } catch (SQLException ex) {
-            Logger.getLogger(ServerViewController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+   
         viewModel.getOnlinePlayersNames().addListener((ListChangeListener.Change<? extends String> change) -> {
 
             while (change.next()) {
