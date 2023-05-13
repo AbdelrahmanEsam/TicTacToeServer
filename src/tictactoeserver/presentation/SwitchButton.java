@@ -10,6 +10,7 @@ package tictactoeserver.presentation;
  *
  * @author Aya
  */
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -33,10 +34,10 @@ public class SwitchButton extends StackPane {
 	
         SimpleBooleanProperty state = new SimpleBooleanProperty();
 
-        private  Server server;
+      
 	private void init() {
 
-               state.set(false);
+            
 		getChildren().addAll(back, button);
 
 		setMinSize(30, 15);
@@ -68,10 +69,7 @@ public class SwitchButton extends StackPane {
 
 			@Override
 			public void handle(Event e) {
-                            if(server == null)
-                            {
-                               getServerInstance();
-                            }
+                            
 				if (state.get()) {
                                       
 					button.setStyle(buttonStyleOff);
@@ -80,7 +78,7 @@ public class SwitchButton extends StackPane {
 					state.set(false);
 				} else {
                                     
-                                   
+                              
 					button.setStyle(buttonStyleOn);
 					back.setFill(Color.valueOf("#80C49E"));
 					setAlignment(button, Pos.CENTER_RIGHT);
@@ -108,12 +106,6 @@ public class SwitchButton extends StackPane {
                 this.state.set(state);
         }
         
-        public Server getServerInstance()
-        {
-          server = Server.getInstance();
-            
-            return server; 
         
-        }
         
 }

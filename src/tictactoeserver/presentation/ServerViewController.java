@@ -4,6 +4,7 @@ package tictactoeserver.presentation;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -134,6 +135,8 @@ gridPane.add(hbox, 0, 1, 2, 1);
       serverStateListener();
       switchToggleObserver();
       onlinePlayersObserver();
+        listView.setVisible(false);
+        pieChart.setVisible(false);
    
     }
     
@@ -144,19 +147,11 @@ gridPane.add(hbox, 0, 1, 2, 1);
     {
     
         viewModel.getServerState().addListener((observable, oldValue, newValue) -> {
- 
-            
-          
+
                 listView.setVisible(newValue);
                 pieChart.setVisible(newValue);
 
         });
-        
-        
-     
-        
-   
-    
     }
     
     
@@ -171,7 +166,10 @@ gridPane.add(hbox, 0, 1, 2, 1);
        
             while (change.next()) {
                 if (change.wasAdded()) {
-                    listView.getItems().addAll(change.getAddedSubList());
+                    Platform.runLater(() -> {
+                         listView.getItems().addAll(change.getAddedSubList());
+                    });
+                   
                 }
             }
            
@@ -187,12 +185,13 @@ gridPane.add(hbox, 0, 1, 2, 1);
         switchToggle.getSwitchState().addListener((observable, oldValue, newValue) -> {
            
              
+           
                viewModel.setServerState(newValue);
            
            
         });
-        switchToggle.setSwitchState(true);
-                switchToggle.setSwitchState(false);
+              
+               
 
     
         

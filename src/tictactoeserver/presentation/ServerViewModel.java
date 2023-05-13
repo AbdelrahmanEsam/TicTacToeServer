@@ -73,6 +73,7 @@ public class ServerViewModel {
 
     public void setServerState(Boolean serverState) {
         this.serverState.set(serverState);
+      
         ClientHandler.serverState.set(serverState);
         
     }
@@ -85,7 +86,7 @@ public class ServerViewModel {
     
         
        ClientHandler.onlinePlayersNames.addListener((ListChangeListener.Change<? extends String> change) -> {
-       
+        
             while (change.next()) {
                 if (change.wasAdded()) {
                     onlinePlayersNames.addAll(change.getAddedSubList());
@@ -93,6 +94,8 @@ public class ServerViewModel {
             }
            
         });
+       
+      
     
     
     }
