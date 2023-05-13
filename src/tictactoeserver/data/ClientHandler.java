@@ -357,7 +357,7 @@ public class ClientHandler extends Thread {
     }
 
     private void replayResponse(String comingMessage) {
-        getClientHandler(comingMessage.split(" ")[1]).sender.println("ReplayResponse" + " " + comingMessage.split(" ")[2]);
+        getClientHandler(comingMessage.split(" ")[1]).sender.println("ReplayResponse" + " " + comingMessage.split(" ")[1]);
     }
     
     private void handleOfflineRequest() {
