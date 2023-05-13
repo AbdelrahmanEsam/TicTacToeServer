@@ -25,7 +25,7 @@ public class ClientHandler extends Thread {
     static Vector<Pair<String, ClientHandler>> onlinePlayers = new Vector();
     static Vector<String> onlineMatches = new Vector();
     DataInputStream listener = null;
-    PrintStream sender = null;
+  PrintStream sender = null;
     Socket newClient;
     public static SimpleBooleanProperty serverState = new SimpleBooleanProperty();
      public static ObservableList<String> onlinePlayersNames = FXCollections.observableArrayList();
@@ -55,6 +55,7 @@ public class ClientHandler extends Thread {
     
 
     }
+   
     
     private void init()
     {
@@ -114,6 +115,9 @@ public class ClientHandler extends Thread {
                                 break;
                             case "ReplayResponse":
                                 replayResponse(comingMessage);
+                                break;
+                                case "Offline":
+                                handleOfflineRequest();
                                 break;
                             default: {
 
@@ -240,7 +244,6 @@ public class ClientHandler extends Thread {
     }
 
     private void validateLoginCredentials(String line) {
-        //To DO check whether username is already registered in DB
        
         String credentials[] = line.split(" ");
          if(!onlinePlayersNames.contains(credentials[1]))
@@ -332,6 +335,39 @@ public class ClientHandler extends Thread {
 
     private void replayResponse(String comingMessage) {
         getClientHandler(comingMessage.split(" ")[1]).sender.println("ReplayResponse" + " " + comingMessage.split(" ")[2]);
+    }
+    
+    private void handleOfflineRequest() {
+
+        try {
+            listener.close();
+            sender.close();
+            String playerName = getNameByHandler();
+            System.out.println(playerName +" offline ");
+            onlinePlayers.removeIf(player -> player.getKey().equals(playerName));
+            onlinePlayersNames.removeIf(player -> player.equals(playerName));
+            onlinePlayers.forEach((t) -> {
+                System.out.println(t.getKey());
+            });
+        } catch (IOException ex) {
+            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private String getNameByHandler()
+    {
+
+          int index = 0;
+        while (index < onlinePlayers.size()) {
+            if (onlinePlayers.get(index).getValue().equals(this)) {
+                return onlinePlayers.get(index).getKey();
+
+            }
+            index++;
+        }
+
+        return null;
+
     }
 
 }
