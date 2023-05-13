@@ -8,7 +8,10 @@ package tictactoeserver.data;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.SimpleBooleanProperty;
+import static tictactoeserver.data.ClientHandler.closeAllSockets;
 
 /**
  *
@@ -37,11 +40,27 @@ public class Server extends Thread{
                   new ClientHandler(accepted);
             
                       }
-            } catch (IOException ex) {
-                           
+            } catch (Exception ex) {
+                closeAllSockets();
             }
        
     }
+
+  
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+       try {
+           System.out.println("closing");
+           server.close();
+       } catch (IOException ex) {
+           Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+       }
+    }
+    
+    
+    
 
     public SimpleBooleanProperty getServerState() {
         return state;

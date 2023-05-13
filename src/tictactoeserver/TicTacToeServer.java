@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import static tictactoeserver.data.ClientHandler.closeAllSockets;
 import tictactoeserver.presentation.ServerViewController;
 import tictactoeserver.presentation.ServerViewModel;
 
@@ -30,6 +31,7 @@ public class TicTacToeServer extends Application {
     public void stop() throws Exception {
         super.stop(); //To change body of generated methods, choose Tools | Templates.
 
+     closeAllSockets();
     }
 
    

@@ -51,11 +51,34 @@ public class ClientHandler extends Thread {
     public void run() {
 
         init();
-
-    
-
     }
-   
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+       //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
+    
+    
+     public static void closeAllSockets() {
+        for (Pair<String, ClientHandler> player : onlinePlayers) {
+            ClientHandler  handler = player.getValue();
+            try {
+                handler.newClient.close();
+                 handler.sender.close();
+           handler.listener.close();
+            } catch (IOException ex) {
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+          
+// Ignore the exception.
+        }
+    }
+    
+    
+     
     
     private void init()
     {
