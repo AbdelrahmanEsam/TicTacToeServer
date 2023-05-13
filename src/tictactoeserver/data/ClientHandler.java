@@ -9,18 +9,13 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
-import static jdk.nashorn.tools.ShellFunctions.input;
-import tictactoeserver.data.DTOS.MatchDto;
 import tictactoeserver.data.DTOS.PlayerDto;
 import tictactoeserver.data.stream_messages.ClientMessage;
 import tictactoeserver.data.stream_messages.ServerMessage;
@@ -35,8 +30,7 @@ public class ClientHandler extends Thread {
     public static SimpleBooleanProperty serverState = new SimpleBooleanProperty();
      public static ObservableList<String> onlinePlayersNames = FXCollections.observableArrayList();
 
-    public ClientHandler() {
-    }
+   
 
     public ClientHandler(Socket newClient) {
         this.newClient = newClient;
@@ -44,7 +38,8 @@ public class ClientHandler extends Thread {
         try {
             listener = new DataInputStream(newClient.getInputStream());
             sender = new PrintStream(newClient.getOutputStream());
-
+            System.out.println("client up");
+            
             //todo 
             start();
         } catch (IOException ex) {
@@ -52,16 +47,29 @@ public class ClientHandler extends Thread {
         }
     }
 
+    @Override
     public void run() {
 
-        String comingMessage = null;
+        init();
+
+    
+
+    }
+    
+    private void init()
+    {
         
-
-        try {
-            while (serverState.get()) {
+       String comingMessage = null;
+        System.out.println(serverState.get());
+    
+            try {
+           
+            while (true) {
+                
                 if (!newClient.isClosed()) {
-
-                    comingMessage = listener.readLine();
+                     comingMessage = listener.readLine();
+                    if(serverState.get()){
+                   
                     if (comingMessage != null) {
 
                         switch (comingMessage.split(" ")[0]) {
@@ -115,23 +123,30 @@ public class ClientHandler extends Thread {
 
                         }
                     }
+                }else{
+                    comingMessage = null;
+                    }
                 }
             }
         } catch (IOException ex) {
-            try {
+            /*try {
                 listener.close();
                 sender.close();
                 String playerName = getNameByHandler();
                 onlinePlayers.removeIf(player -> player.getKey().equals(playerName));
                 onlinePlayersNames.removeIf(player -> player.equals(playerName));
+                onlinePlayers.forEach((t) -> {
+                    System.out.println(t.getKey());
+                });
             } catch (IOException e) {
 
-            }
+            }*/
         }
-
+    
     }
 
     private void requestGameMove(String request) {
+      
         String secondPlayerName = request.split(" ")[1];
         ClientHandler clientHandler = getClientHandler(secondPlayerName);
 
@@ -197,23 +212,6 @@ public class ClientHandler extends Thread {
         }
         return null;
     }
-    
-    
-    private String getNameByHandler()
-    {
-    
-          int index = 0;
-        while (index < onlinePlayers.size()) {
-            if (onlinePlayers.get(index).getValue().equals(this)) {
-                return onlinePlayers.get(index).getKey();
-
-            }
-            index++;
-        }
-        
-        return null;
-    
-    }
 
     private void validateRegistrationCredentials(String line) {
         //To DO check whether username is already registered in DB
@@ -243,7 +241,10 @@ public class ClientHandler extends Thread {
 
     private void validateLoginCredentials(String line) {
         //To DO check whether username is already registered in DB
+       
         String credentials[] = line.split(" ");
+         if(!onlinePlayersNames.contains(credentials[1]))
+         {
         PlayerDto player = new PlayerDto(credentials[1], credentials[2]);
         String loginResponse = DataAccessLayer.login(player);
         switch (loginResponse) {
@@ -262,6 +263,7 @@ public class ClientHandler extends Thread {
                 loginResponse = "Error";
         }
         sendLoginResponse(loginResponse);
+         }
     }
 
     private void sendLoginResponse(String str) {
@@ -329,7 +331,7 @@ public class ClientHandler extends Thread {
     }
 
     private void replayResponse(String comingMessage) {
-        getClientHandler(comingMessage.split(" ")[1]).sender.println("ReplayResutl" + " " + comingMessage.split(" ")[2]);
+        getClientHandler(comingMessage.split(" ")[1]).sender.println("ReplayResponse" + " " + comingMessage.split(" ")[2]);
     }
 
 }

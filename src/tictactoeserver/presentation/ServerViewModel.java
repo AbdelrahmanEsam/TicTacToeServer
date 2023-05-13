@@ -73,6 +73,7 @@ public class ServerViewModel {
 
     public void setServerState(Boolean serverState) {
         this.serverState.set(serverState);
+      
         ClientHandler.serverState.set(serverState);
         
     }

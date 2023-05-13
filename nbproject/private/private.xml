@@ -2,6 +2,14 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/D:/TicTacToeServer/TicTacToeServer/src/tictactoeserver/data/Server.java</file>
+            <file>file:/D:/TicTacToeServer/TicTacToeServer/src/tictactoeserver/TicTacToeServer.java</file>
+            <file>file:/D:/TicTacToeServer/TicTacToeServer/src/tictactoeserver/presentation/SwitchButton.java</file>
+            <file>file:/D:/TicTacToeServer/TicTacToeServer/src/tictactoeserver/data/ClientHandler.java</file>
+            <file>file:/D:/TicTacToeServer/TicTacToeServer/src/tictactoeserver/presentation/ServerViewModel.java</file>
+            <file>file:/D:/TicTacToeServer/TicTacToeServer/src/tictactoeserver/data/DataAccessLayer.java</file>
+            <file>file:/D:/TicTacToeServer/TicTacToeServer/src/tictactoeserver/presentation/ServerViewController.java</file>
+        </group>
     </open-files>
 </project-private>

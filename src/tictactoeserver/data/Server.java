@@ -25,9 +25,10 @@ public class Server extends Thread{
         super.run(); 
         
         
-           state.set(true);
+         
             try {
-              
+        
+                System.out.println("up");
                 server = new ServerSocket(4004);
                  while(true){
             
@@ -46,15 +47,12 @@ public class Server extends Thread{
         return state;
     }
 
-    public void setState(SimpleBooleanProperty state) {
-        this.state = state;
+    public void setState(Boolean state) {
+        System.out.println(state);
+        this.state.set(state);
     }
 
-    @Override
-    public void interrupt() {
-        super.interrupt();
-        state.set(false);
-    }
+   
     
     
     
@@ -67,7 +65,6 @@ public class Server extends Thread{
       private Server()
       {
     
-      
       
       }
       
